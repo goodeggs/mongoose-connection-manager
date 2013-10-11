@@ -1,0 +1,12 @@
+{
+  "name": "connection_manager",
+  "version": "0.0.1",
+  "engines": {
+    "node": "0.10.5",
+    "npm": "1.2.18"
+  },
+  "dependencies": {
+    "fibrous": "*",
+    "mongoose": "*"
+  },
+}

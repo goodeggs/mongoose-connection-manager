@@ -1,4 +1,4 @@
-connection_manager
+Connection Manager
 ==================
 
 DB Connection Manager

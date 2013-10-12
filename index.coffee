@@ -2,6 +2,9 @@ fibrous = require 'fibrous'
 mongoose = require 'mongoose'
 
 module.exports = databases =
+  connectionExists: (name) ->
+    @[name]?
+
   createConnection: (name, settings) ->
     @[name] = mongoose.createConnection()
     @[name].settings = settings

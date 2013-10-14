@@ -2,12 +2,18 @@ fibrous = require 'fibrous'
 mongoose = require 'mongoose'
 
 module.exports = databases =
-  connectionExists: (name) ->
-    @[name]?
+  connections: {}
 
-  createConnection: (name, settings) ->
-    @[name] = mongoose.createConnection()
-    @[name].settings = settings
+  get: (name) ->
+    @connections[name]
+
+  exists: (name) ->
+    @connections[name]?
+
+  create: (name, settings) ->
+    @connections[name] = mongoose.createConnection()
+    @connections[name].settings = settings
+    @connections[name]
 
   connect: (cb) ->
     connectTo = (name, settings, callback) =>
@@ -22,13 +28,13 @@ module.exports = databases =
           callback()
 
       if url.indexOf ',' > 0
-        @[name].openSet url, options, finishOrRetry
+        @connections[name].openSet url, options, finishOrRetry
       else
-        @[name].open url, options, finishOrRetry
+        @connections[name].open url, options, finishOrRetry
 
     futures = []
 
-    for name, connection of @
+    for name, connection of @connections
       if connection.readyState is 0
         futures.push connectTo.future name, connection.settings
 

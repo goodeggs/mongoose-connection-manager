@@ -1,5 +1,5 @@
 {
-  "name": "connection_manager",
+  "name": "connection-manager",
   "version": "0.0.1",
   "engines": {
     "node": "0.10.5",

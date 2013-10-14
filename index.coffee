@@ -11,7 +11,15 @@ module.exports = databases =
     @connections[name]?
 
   create: (name, settings) ->
-    @connections[name] = mongoose.createConnection()
+    throw new Error "Connection name must be provided" unless name?
+    throw new Error "Connection settings must be provided" unless setting?
+    throw new Error "Connection url must be provided" unless setting.url
+
+    if settings.useDefault
+      @connections[name] = mongoose.connection
+    else
+      @connections[name] = mongoose.createConnection()
+
     @connections[name].settings = settings
     @connections[name]
 
@@ -23,7 +31,7 @@ module.exports = databases =
       finishOrRetry = (err, result) ->
         if err?
           settings.logger?.error err, "Failed to connect to `#{url}` on startup - retrying in 5 sec"
-          setTimeout (-> connectTo name, callback), 5000
+          setTimeout (-> connectTo name, settings, callback), 5000
         else
           callback()
 

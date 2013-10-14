@@ -1,4 +1,2 @@
-Connection Manager
+Mongoose Connection Manager
 ==================
-
-DB Connection Manager

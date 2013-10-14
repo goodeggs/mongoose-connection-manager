@@ -1,5 +1,5 @@
 {
-  "name": "connection-manager",
+  "name": "mongoose-connection-manager",
   "version": "0.0.2",
   "engines": {
     "node": "0.10.5",

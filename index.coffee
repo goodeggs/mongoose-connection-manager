@@ -1,4 +1,3 @@
-fibrous = require 'fibrous'
 mongoose = require 'mongoose'
 
 module.exports = databases =
@@ -24,6 +23,12 @@ module.exports = databases =
     @connections[name]
 
   connect: (cb) ->
+    all = (hash) ->
+      for name, value of hash
+        if not value
+          return false
+      true
+
     connectTo = (name, settings, callback) =>
       url = settings.url
       options = settings.options
@@ -33,22 +38,20 @@ module.exports = databases =
           settings.logger?.error err, "Failed to connect to `#{url}` on startup - retrying in 5 sec"
           setTimeout (-> connectTo name, settings, callback), 5000
         else
-          callback()
+          connected[name] = true
+          cb?() if all connected
 
       if url.indexOf ',' > 0
         @connections[name].openSet url, options, finishOrRetry
       else
         @connections[name].open url, options, finishOrRetry
 
-    futures = []
+    connected = {}
 
     for name, connection of @connections
       if connection.readyState is 0
-        futures.push connectTo.future name, connection.settings
+        connected[name] = false
+        connectTo name, connection.settings
 
-    fibrous.run ->
-      fibrous.wait futures
-      cb?()
-
-  disconnect: fibrous ->
-    mongoose.sync.disconnect()
+  disconnect: (callback) ->
+    mongoose.disconnect(callback)

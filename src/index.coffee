@@ -12,7 +12,7 @@ module.exports = databases =
   create: (name, settings) ->
     throw new Error "Connection name must be provided" unless name?
     throw new Error "Connection settings must be provided" unless settings?
-    throw new Error "Connection url must be provided" unless setting.url
+    throw new Error "Connection url must be provided" unless settings.url
 
     if settings.useDefault
       @connections[name] = mongoose.connection

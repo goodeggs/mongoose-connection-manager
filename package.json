@@ -1,12 +1,22 @@
 {
   "name": "mongoose-connection-manager",
   "version": "0.0.3",
+  "main": "lib/index",
   "engines": {
     "node": "0.10.5",
     "npm": "1.2.18"
   },
   "dependencies": {
-    "fibrous": "*",
     "mongoose": "*"
+  },
+  "devDependencies": {
+    "coffee-script": "*",
+    "expect.js": "*",
+    "mocha": "*",
+    "sinon": "*"
+  },
+  "scripts": {
+    "pretest": "./node_modules/.bin/coffee -c -o lib src",
+    "test": "./node_modules/.bin/mocha"
   }
 }

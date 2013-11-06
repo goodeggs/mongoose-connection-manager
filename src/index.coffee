@@ -41,7 +41,7 @@ module.exports = databases =
           connected[name] = true
           cb?() if all connected
 
-      if url.indexOf ',' > 0
+      if url.indexOf(',') >= 0
         @connections[name].openSet url, options, finishOrRetry
       else
         @connections[name].open url, options, finishOrRetry

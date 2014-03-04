@@ -1,5 +1,11 @@
 mongoose = require 'mongoose'
 
+ConnectionStates =
+  disconnected  : 0
+  connected     : 1
+  connecting    : 2
+  disconnecting : 3
+
 module.exports = databases =
   connections: {}
 
@@ -49,9 +55,11 @@ module.exports = databases =
     connected = {}
 
     for name, connection of @connections
-      if connection.readyState is 0
-        connected[name] = false
-        connectTo name, connection.settings
+      switch connection.readyState
+        when ConnectionStates.disconnected
+          connected[name] = false
+          connectTo name, connection.settings
+
 
   disconnect: (callback) ->
     mongoose.disconnect(callback)

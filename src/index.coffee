@@ -1,7 +1,14 @@
 mongoose = require 'mongoose'
 
+ConnectionStates =
+  disconnected  : 0
+  connected     : 1
+  connecting    : 2
+  disconnecting : 3
+
 module.exports = databases =
   connections: {}
+  callbacks: []
 
   get: (name) ->
     @connections[name]
@@ -23,35 +30,35 @@ module.exports = databases =
     @connections[name]
 
   connect: (cb) ->
-    all = (hash) ->
-      for name, value of hash
-        if not value
-          return false
-      true
+    return process.nextTick(cb) if @allConnected()
 
-    connectTo = (name, settings, callback) =>
+    @callbacks.push cb if cb?
+
+    connectTo = (name, settings) =>
       url = settings.url
       options = settings.options
 
-      finishOrRetry = (err, result) ->
+      finishOrRetry = (err, result) =>
         if err?
           settings.logger?.error err, "Failed to connect to `#{url}` on startup - retrying in 5 sec"
-          setTimeout (-> connectTo name, settings, callback), 5000
-        else
-          connected[name] = true
-          cb?() if all connected
+          setTimeout (-> connectTo name, settings), 5000
+        else if @allConnected()
+          callback() while callback = @callbacks.pop()
 
       if url.indexOf(',') >= 0
         @connections[name].openSet url, options, finishOrRetry
       else
         @connections[name].open url, options, finishOrRetry
 
-    connected = {}
-
     for name, connection of @connections
-      if connection.readyState is 0
-        connected[name] = false
-        connectTo name, connection.settings
+      switch connection.readyState
+        when ConnectionStates.disconnected
+          connectTo name, connection.settings
+        when ConnectionStates.disconnecting
+          throw new Error "Called connect() before disconnect() has finished"
+
+  allConnected: ->
+    Object.keys(@connections).every((connection) => @connections[connection].readyState is ConnectionStates.connected)
 
   disconnect: (callback) ->
     mongoose.disconnect(callback)

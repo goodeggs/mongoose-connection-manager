@@ -10,7 +10,7 @@
     "mongoose": "*"
   },
   "devDependencies": {
-    "coffee-script": "*",
+    "coffee-script": "^1.7",
     "expect.js": "*",
     "mocha": "*",
     "sinon": "*"

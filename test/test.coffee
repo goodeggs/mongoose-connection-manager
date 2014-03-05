@@ -56,3 +56,7 @@ describe '::mongoose-manager', ->
     it 'connects once despite attempts to open many times', (done) ->
       manager.connect()
       manager.connect done
+
+    it 'calls callback immediately if everything is already open', (done) ->
+      manager.connect()
+      process.nextTick( -> manager.connect done )

@@ -30,6 +30,8 @@ module.exports = databases =
     @connections[name]
 
   connect: (cb) ->
+    return process.nextTick(cb) if @allConnected()
+
     @callbacks.push cb if cb?
 
     connectTo = (name, settings) =>
@@ -40,7 +42,7 @@ module.exports = databases =
         if err?
           settings.logger?.error err, "Failed to connect to `#{url}` on startup - retrying in 5 sec"
           setTimeout (-> connectTo name, settings), 5000
-        else if Object.keys(@connections).every((connection) => @connections[connection].readyState is ConnectionStates.connected)
+        else if @allConnected()
           callback() while callback = @callbacks.pop()
 
       if url.indexOf(',') >= 0
@@ -55,6 +57,8 @@ module.exports = databases =
         when ConnectionStates.disconnecting
           throw new Error "Called connect() before disconnect() has finished"
 
+  allConnected: ->
+    Object.keys(@connections).every((connection) => @connections[connection].readyState is ConnectionStates.connected)
 
   disconnect: (callback) ->
     mongoose.disconnect(callback)

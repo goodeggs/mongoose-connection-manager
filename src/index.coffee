@@ -36,7 +36,7 @@ module.exports = databases =
 
     connectTo = (name, settings) =>
       url = settings.url
-      options = settings.options
+      options = settings.options ? {}
 
       finishOrRetry = (err, result) =>
         if err?

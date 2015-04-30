@@ -1,7 +1,7 @@
 require './support/test_helper'
-manager = require '../lib/index'
 
 mongoose = require 'mongoose'
+manager = require('../lib/index')(mongoose)
 
 describe '::mongoose-manager', ->
   connectionStub = (url, options, callback) ->

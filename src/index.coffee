@@ -1,12 +1,14 @@
-mongoose = require 'mongoose'
-
 ConnectionStates =
   disconnected  : 0
   connected     : 1
   connecting    : 2
   disconnecting : 3
 
-module.exports = databases =
+###
+instantiate w/ mongoose instance to avoid duplicate copies.
+(e.g. breaks model creation when `npm link`ing)
+###
+module.exports = databases = (mongoose = require('mongoose')) ->
   connections: {}
   callbacks: []
 

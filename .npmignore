@@ -1,4 +1,7 @@
-lib-cov
+.editorconfig
+.gitignore
+.travis.yml
+test/
 *.seed
 *.log
 *.csv
@@ -7,12 +10,7 @@ lib-cov
 *.pid
 *.gz
 .DS_Store
-
 pids
 logs
 results
-
 npm-debug.log
-node_modules
-
-lib

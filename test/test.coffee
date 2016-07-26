@@ -61,7 +61,7 @@ describe '::mongoose-manager', ->
         process.nextTick( -> manager.connect done )
 
   describe 'a connect error', ->
-    {logger, username, password, databaseConfigName, connect, err} = {}
+    {url, logger, username, password, databaseConfigName, connect, err} = {}
 
     beforeEach ->
       logger = sinon.stub {error: (->), warn: (->), info: (->), debug: (->)}
@@ -74,8 +74,6 @@ describe '::mongoose-manager', ->
       sinon.stub(mongoose.Connection::, 'open')
 
       url = "mongodb://#{username}:#{password}@localhost/db-name"
-
-      manager.create databaseConfigName, { url, logger }
 
       # tricky to stub out a failed open followed by a success which also mutates the connection state
       connect = (cb) ->
@@ -90,16 +88,32 @@ describe '::mongoose-manager', ->
         connection.readyState = 1
         connection.open.yield()
 
-    it 'logs an error', (done) ->
-      connect ->
-        expect(logger.error.callCount).to.equal 1
-        expect(logger.error.firstCall.args[0]).to.equal err
-        expect(logger.error.firstCall.args[1]).to.contain(databaseConfigName)
-        done()
+    describe 'with a logger passed in via settings', ->
+      beforeEach ->
+        manager.create databaseConfigName, { url, logger }
 
-    it 'does not leak credentials out to the logs', (done) ->
-      connect ->
-        expect(logger.error.callCount).to.equal 1
-        expect(logger.error.firstCall.args[1]).not.to.contain(username)
-        expect(logger.error.firstCall.args[1]).not.to.contain(password)
-        done()
+      it 'logs an error', (done) ->
+        connect ->
+          expect(logger.error.callCount).to.equal 1
+          expect(logger.error.firstCall.args[0]).to.equal err
+          expect(logger.error.firstCall.args[1]).to.contain(databaseConfigName)
+          done()
+
+      it 'does not leak credentials out to the logs', (done) ->
+        connect ->
+          expect(logger.error.callCount).to.equal 1
+          expect(logger.error.firstCall.args[1]).not.to.contain(username)
+          expect(logger.error.firstCall.args[1]).not.to.contain(password)
+          done()
+
+    describe 'with a logger passed in later via setLogger', ->
+      beforeEach ->
+        manager.create databaseConfigName, { url }
+        manager.setLogger(logger)
+
+      it 'logs an error', (done) ->
+        connect ->
+          expect(logger.error.callCount).to.equal 1
+          expect(logger.error.firstCall.args[0]).to.equal err
+          expect(logger.error.firstCall.args[1]).to.contain(databaseConfigName)
+          done()

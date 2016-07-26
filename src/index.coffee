@@ -11,6 +11,7 @@ instantiate w/ mongoose instance to avoid duplicate copies.
 module.exports = databases = (mongoose = require('mongoose')) ->
   connections: {}
   callbacks: []
+  logger: null
 
   get: (name) ->
     @connections[name]
@@ -31,6 +32,9 @@ module.exports = databases = (mongoose = require('mongoose')) ->
     @connections[name].settings = settings
     @connections[name]
 
+  setLogger: (newLogger) ->
+    @logger = newLogger
+
   connect: (cb) ->
     return process.nextTick(cb) if @allConnected()
 
@@ -42,7 +46,7 @@ module.exports = databases = (mongoose = require('mongoose')) ->
 
       finishOrRetry = (err, result) =>
         if err?
-          settings.logger?.error err, "Failed to connect to `#{name}` on startup - retrying in 5 sec"
+          (settings.logger ? @logger)?.error err, "Failed to connect to `#{name}` on startup - retrying in 5 sec"
           setTimeout (-> connectTo name, settings), 5000
         else if @allConnected()
           callback() while callback = @callbacks.pop()

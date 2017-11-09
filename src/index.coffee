@@ -8,7 +8,10 @@ ConnectionStates =
 instantiate w/ mongoose instance to avoid duplicate copies.
 (e.g. breaks model creation when `npm link`ing)
 ###
-module.exports = databases = (mongoose = require('mongoose')) ->
+module.exports = databases = (mongoose) ->
+  if not mongoose?
+    throw new Error('Mongoose is a required argument for mongoose-connection-manager!')
+
   connections: {}
   callbacks: []
   logger: null

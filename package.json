@@ -6,7 +6,7 @@
     "type": "git",
     "url": "http://github.com/goodeggs/mongoose-connection-manager.git"
   },
-  "dependencies": {
+  "peerDependencies": {
     "mongoose": "*"
   },
   "devDependencies": {

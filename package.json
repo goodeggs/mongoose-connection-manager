@@ -13,7 +13,8 @@
     "coffee-script": "^1.7",
     "expect.js": "*",
     "mocha": "*",
-    "sinon": "*"
+    "mongoose": "^4.13.1",
+    "sinon": "2"
   },
   "scripts": {
     "build": "./node_modules/.bin/coffee -c -o lib src",

@@ -54,10 +54,7 @@ module.exports = databases = (mongoose) ->
         else if @allConnected()
           callback() while callback = @callbacks.pop()
 
-      if url.indexOf(',') >= 0
-        @connections[name].openSet url, options, finishOrRetry
-      else
-        @connections[name].open url, options, finishOrRetry
+      @connections[name].openUri url, options, finishOrRetry
 
     for name, connection of @connections
       switch connection.readyState

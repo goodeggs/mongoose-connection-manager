@@ -10,8 +10,7 @@ describe '::mongoose-manager', ->
       process.nextTick callback
 
     beforeEach ->
-      sinon.stub(mongoose.Connection::, 'open', connectionStub)
-      sinon.stub(mongoose.Connection::, 'openSet', connectionStub)
+      sinon.stub(mongoose.Connection::, 'openUri').callsFake(connectionStub)
 
     describe 'a single server and replica set connection', ->
       {singleServer, replicaSet} = {}
@@ -26,16 +25,16 @@ describe '::mongoose-manager', ->
         it 'calls callback on successful connection', (done) ->
           manager.connect done
 
-        it 'calls open for single urls', (done) ->
+        it 'calls openUri for single urls', (done) ->
           manager.connect ->
-            expect(mongoose.Connection::open.called).to.equal true
-            expect(mongoose.Connection::open.args[0][0]).to.equal singleServer
+            expect(mongoose.Connection::openUri.called).to.equal true
+            expect(mongoose.Connection::openUri.args[0][0]).to.equal singleServer
             done()
 
-        it 'calls openSet for multiple urls', (done) ->
+        it 'calls openUri for multiple urls', (done) ->
           manager.connect ->
-            expect(mongoose.Connection::openSet.called).to.equal true
-            expect(mongoose.Connection::openSet.args[0][0]).to.equal replicaSet
+            expect(mongoose.Connection::openUri.called).to.equal true
+            expect(mongoose.Connection::openUri.args[1][0]).to.equal replicaSet
             done()
 
     describe 'a connection set that already exists and is open', ->
@@ -64,6 +63,7 @@ describe '::mongoose-manager', ->
     {url, logger, username, password, databaseConfigName, connect, err} = {}
 
     beforeEach ->
+      sinon.useFakeTimers()
       logger = sinon.stub {error: (->), warn: (->), info: (->), debug: (->)}
       username = 'someUsername'
       password = 'somePassword'
@@ -71,7 +71,7 @@ describe '::mongoose-manager', ->
 
       err = new Error('unable to connect')
 
-      sinon.stub(mongoose.Connection::, 'open')
+      sinon.stub(mongoose.Connection::, 'openUri')
 
       url = "mongodb://#{username}:#{password}@localhost/db-name"
 
@@ -83,10 +83,10 @@ describe '::mongoose-manager', ->
         expect(connection).to.be.ok()
 
         # first return with an error
-        connection.open.yield(err)
+        connection.openUri.yield(err)
         # then return with success that also changes readyState
         connection.readyState = 1
-        connection.open.yield()
+        connection.openUri.yield()
 
     describe 'with a logger passed in via settings', ->
       beforeEach ->

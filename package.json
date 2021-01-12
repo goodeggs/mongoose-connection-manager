@@ -13,7 +13,7 @@
     "coffee-script": "^1.7",
     "expect.js": "*",
     "mocha": "*",
-    "mongoose": "^4.13.1",
+    "mongoose": "^5.11.11",
     "sinon": "2"
   },
   "scripts": {
@@ -23,6 +23,7 @@
     "test": "./node_modules/.bin/mocha"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   }
 }
